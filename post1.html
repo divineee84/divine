@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Divine’s Cyber Chronicle</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --text: #e0e0e0;
+      --accent: #7289da;
+      --highlight: #ff0077;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+    header {
+      background-color: #111;
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--accent);
+      animation: slideDown 1s ease;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 {
+      font-size: 2rem;
+      color: var(--accent);
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: bold;
+      position: relative;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background-color: var(--highlight);
+      bottom: -4px;
+      left: 0;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease-in-out;
+    }
+    nav a:hover::after {
+      transform: scaleX(1);
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      animation: fadeIn 1.2s ease;
+    }
+    .post {
+      background: #1c1c1c;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(114, 137, 218, 0.3);
+      transition: transform 0.3s;
+      margin-bottom: 2rem;
+    }
+    .post:hover {
+      transform: scale(1.01);
+    }
+    .post h2 {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .date {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 1.2rem;
+    }
+    .post p {
+      margin-bottom: 1.2rem;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background-color: #111;
+      margin-top: 3rem;
+      font-size: 0.9rem;
+      border-top: 1px solid #222;
+    }
+    @keyframes slideDown {
+      0% { transform: translateY(-100%); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.98); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><i class="fas fa-terminal"></i> Divine84</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="https://github.com/Divine84" target="_blank">GitHub</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <article class="post">
+      <h2>Welcome to Divine’s Cyber Chronicle</h2>
+      <p class="date">Posted on Dec 27, 2024</p>
+      <p>
+        Divine’s Cyber Chronicle isn’t a brand — it’s a digital battlefield diary. I’m not here to sell you polished narratives or flex certs. I’m here to write my war story in public — from script kiddie stumbles to sharpening my edge in cloud and cyber.
+      </p>
+      <p>
+        This log captures my dual journey — playing offense in underground hacking while mastering defense in cloud security. One foot in shadows, one in sunlight. Legal grind by day, raw curiosity by night.
+      </p>
+      <p>
+        I’m not an expert. Not even close. But I show up. Every day. Whether it’s Garuda tweaks, breaking virtual machines, learning exploit chains, or documenting CTF tears — every scar, every config, every script goes in here.
+      </p>
+      <p>
+        I started this because most blogs bored me. Too much sugar, not enough salt. I wanted something real. A place where I could dump my daily logs, tool configs, bash madness, wins, fails, and mindset shifts — all uncensored.
+      </p>
+      <p>
+        You won’t find motivational quotes here. What you will find is a toolkit of real skills, deeply earned over time: from Python brute scripts to SSH pivoting, from nmap flags to IAM policies.
+      </p>
+      <p>
+        Expect raw breakdowns — not just how I did something, but how many times I failed before it worked. Expect long rants about terminal life. Expect notes on building muscle memory, not chasing dopamine.
+      </p>
+      <p>
+        If you're lost in the hacking hype or cloud cert trap, this blog is your compass. It won’t show you shortcuts — it’ll show you scars. It’ll show you what daily obsession, frustration, and relentless debugging looks like.
+      </p>
+      <p>
+        I’m Divine. This is my war log. Stay dangerous, stay sharp — we’re just getting started.
+      </p>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Divine. Built with brain, bash, and bad decisions.</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Divine – A Student</title>
+  <style>
+    /* =============================================
+       Reset + Base
+       ============================================= */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      scroll-behavior: smooth;
+      background: #121212;
+      color: #ccc;
+      font-family: 'Fira Code', monospace;
+      overflow-x: hidden;
+      position: relative;
+      opacity: 0; /* start invisible for opening animation */
+      animation: bodyFadeIn 1s ease forwards;
+    }
+    @keyframes bodyFadeIn {
+      to { opacity: 1; }
+    }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    img { max-width: 100%; display: block; }
+    button { cursor: pointer; border: none; background: none; }
+
+    /* =============================================
+       Snake-Style Border Animation
+       ============================================= */
+    @keyframes borderSnake {
+      0% {
+        border-top-color: #00bfff;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+      }
+      25% {
+        border-top-color: transparent;
+        border-right-color: #00bfff;
+      }
+      50% {
+        border-right-color: transparent;
+        border-bottom-color: #00bfff;
+      }
+      75% {
+        border-bottom-color: transparent;
+        border-left-color: #00bfff;
+      }
+      100% {
+        border-left-color: transparent;
+        border-top-color: #00bfff;
+      }
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border: 4px solid transparent;
+      animation: borderSnake 4s linear infinite;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* =============================================
+       Root Colors
+       ============================================= */
+    :root {
+      --primary: #56b6c2;
+      --secondary: #89c2d9;
+      --bg-dark: #1e1e1e;
+      --bg-medium: #202020;
+      --text-light: #ccc;
+      --link-glow: #00bfff;
+      --nav-bg: #181818;
+      --nav-link: #ccc;
+      --nav-hover: #00bfff;
+    }
+
+    /* =============================================
+       Header & Navigation
+       ============================================= */
+    header {
+      position: fixed;
+      top: 0; left: 0; width: 100%;
+      background: var(--nav-bg);
+      border-bottom: 1px solid #333;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+    }
+    header h2 {
+      color: var(--primary);
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    nav ul {
+      display: flex;
+      gap: 20px;
+    }
+    nav a {
+      color: var(--nav-link);
+      font-weight: 500;
+      transition: color 0.3s, text-shadow 0.3s;
+    }
+    nav a:hover {
+      color: var(--nav-hover);
+      text-shadow: 0 0 5px var(--nav-hover);
+    }
+
+    /* =============================================
+       Container
+       ============================================= */
+    #container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 140px 20px 40px; /* extra top padding for fixed header */
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
+      z-index: 1;
+      position: relative;
+      transform: scale(0.95);
+      animation: containerPop 0.8s ease-out 0.5s forwards;
+      opacity: 0;
+    }
+    @keyframes containerPop {
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* =============================================
+       Animations (Section Fade-In)
+       ============================================= */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .animate.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =============================================
+       Smooth Scroll Buttons
+       ============================================= */
+    .scroll-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: var(--primary);
+      color: #121212;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background 0.3s, box-shadow 0.6s ease-in-out;
+      position: relative;
+    }
+    .scroll-link:hover {
+      background: var(--secondary);
+      box-shadow: 0 0 10px var(--link-glow), 0 0 20px var(--link-glow);
+    }
+
+    /* =============================================
+       Hero Section
+       ============================================= */
+    #hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      background: var(--bg-dark);
+      color: #fff;
+      text-align: center;
+      padding: 60px 20px;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+    #hero h1 {
+      font-size: 3rem;
+      color: var(--secondary);
+      margin-bottom: 10px;
+      animation: fadeInUp 1s ease forwards;
+    }
+    #hero p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      max-width: 700px;
+      margin-top: 10px;
+      animation: fadeInUp 1s ease 0.3s forwards;
+      opacity: 0;
+    }
+    #hero .scroll-link {
+      animation: fadeInUp 1s ease 0.6s forwards;
+      opacity: 0;
+    }
+
+    /* =============================================
+       Section Titles
+       ============================================= */
+    .section-title {
+      font-size: 2rem;
+      color: var(--secondary);
+      margin-bottom: 20px;
+      animation: fadeInUp 1s ease forwards;
+    }
+    .section-title.delay-1 { animation-delay: 0.2s; }
+    .section-title.delay-2 { animation-delay: 0.4s; }
+    .section-title.delay-3 { animation-delay: 0.6s; }
+    .section-title.delay-4 { animation-delay: 0.8s; }
+    .section-title.delay-5 { animation-delay: 1s; }
+
+    /* =============================================
+       Sections Base
+       ============================================= */
+    section {
+      width: 100%;
+      animation: fadeInUp 1s ease forwards;
+      opacity: 0;
+    }
+    section.delay-1 { animation-delay: 0.2s; }
+    section.delay-2 { animation-delay: 0.4s; }
+    section.delay-3 { animation-delay: 0.6s; }
+    section.delay-4 { animation-delay: 0.8s; }
+    section.delay-5 { animation-delay: 1s; }
+
+    /* =============================================
+       About Section
+       ============================================= */
+    #about {
+      padding-top: 40px;
+    }
+    #about p {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-light);
+      margin-bottom: 20px;
+    }
+    #about .highlight {
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* =============================================
+       What I Do Section
+       ============================================= */
+    #do p {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-light);
+      margin-bottom: 20px;
+    }
+
+    /* =============================================
+       Learning Section
+       ============================================= */
+    #learning p {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-light);
+      margin-bottom: 20px;
+    }
+
+    /* =============================================
+       Goals Section
+       ============================================= */
+    #goals p {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-light);
+      margin-bottom: 20px;
+    }
+
+    /* =============================================
+       Skills Section
+       ============================================= */
+    #skills {
+      background: var(--bg-dark);
+      border-radius: 12px;
+      padding: 40px 20px;
+      position: relative;
+    }
+    #skills ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    #skills ul li {
+      background: rgba(86,182,194,0.15);
+      padding: 12px 22px;
+      border-radius: 10px;
+      color: var(--text-light);
+      font-weight: 600;
+      transition: background 0.3s, transform 0.3s, box-shadow 0.6s ease-in-out;
+      position: relative;
+    }
+    #skills ul li:hover {
+      background: #333; 
+      color: #121212;
+      transform: translateY(-3px);
+      box-shadow: 0 0 10px var(--link-glow), 0 0 20px var(--link-glow);
+    }
+
+    /* =============================================
+       Certificates Section
+       ============================================= */
+    #certificates {
+      padding: 40px 20px;
+      background: var(--bg-medium);
+      border-radius: 12px;
+      position: relative;
+    }
+    .cert-item {
+      background: #2a2a2a;
+      color: var(--text-light);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+      position: relative;
+    }
+    .cert-item:hover {
+      background: #333;
+      transform: translateY(-5px);
+      box-shadow: 0 0 10px var(--link-glow), 0 0 20px var(--link-glow);
+    }
+
+    /* =============================================
+       Actions Section
+       ============================================= */
+    #actions {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+    #actions button {
+      padding: 12px 25px;
+      background: var(--primary);
+      color: #121212;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background 0.3s, box-shadow 0.6s ease-in-out;
+      position: relative;
+    }
+    #actions button:hover {
+      background: var(--secondary);
+      box-shadow: 0 0 10px var(--link-glow), 0 0 20px var(--link-glow);
+    }
+
+    /* =============================================
+       Blog Feed Section (Single Post)
+       ============================================= */
+    #blog {
+      padding: 40px 20px;
+      background: var(--bg-dark);
+      border-radius: 12px;
+      position: relative;
+    }
+    .blog-title {
+      font-size: 2rem;
+      color: var(--secondary);
+      margin-bottom: 20px;
+      text-align: center;
+      animation: fadeInUp 1s ease forwards;
+    }
+    .post-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .post-item {
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 10px;
+      transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeInUp 0.8s ease forwards;
+    }
+    .post-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .post-item h3 {
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-size: 1.3rem;
+    }
+    .post-item .post-meta {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 12px;
+    }
+    .post-item p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--text-light);
+      margin-bottom: 10px;
+    }
+    .post-item a.read-more {
+      color: var(--link-glow);
+      font-weight: bold;
+      transition: text-shadow 0.3s;
+    }
+    .post-item a.read-more:hover {
+      text-shadow: 0 0 5px var(--link-glow);
+    }
+
+    /* =============================================
+       Contact Section
+       ============================================= */
+    #contact {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid #333;
+    }
+    .discord-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      color: #7289da;
+      transition: opacity 0.3s, box-shadow 0.6s ease-in-out;
+      position: relative;
+    }
+    .discord-link:hover {
+      opacity: 0.8;
+      box-shadow: 0 0 10px var(--link-glow), 0 0 20px var(--link-glow);
+    }
+    .discord-icon {
+      width: 28px;
+      height: 28px;
+      fill: #7289da;
+    }
+
+    /* =============================================
+       Footer
+       ============================================= */
+    footer {
+      width: 100%;
+      background: var(--bg-dark);
+      padding: 40px 20px;
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+      border-top: 2px solid #333;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeInUp 1s ease 3.6s forwards;
+    }
+
+    /* =============================================
+       Scrollbar
+       ============================================= */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-medium);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    /* =============================================
+       Responsive
+       ============================================= */
+    @media (max-width: 768px) {
+      #container {
+        padding: 120px 15px 30px;
+        gap: 50px;
+      }
+      #hero h1 {
+        font-size: 2.6rem;
+      }
+      #hero p {
+        font-size: 1rem;
+      }
+      .section-title, .blog-title {
+        font-size: 1.8rem;
+      }
+      #skills ul li, .cert-item {
+        padding: 10px 18px;
+      }
+      .discord-icon {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    @media (max-width: 480px) {
+      #hero h1 {
+        font-size: 2.2rem;
+      }
+      .section-title, .blog-title {
+        font-size: 1.6rem;
+      }
+      #hero p {
+        font-size: 0.9rem;
+      }
+      #container {
+        padding: 100px 10px 20px;
+      }
+      .discord-icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header / Navigation -->
+  <header>
+    <h2>Divine</h2>
+    <nav>
+      <ul>
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#blog">Blog</a></li>
+        <li><a href="#goals">Goal</a></li>
+        <li><a href="#about">About Me</a></li>
+        <li><a href="https://github.com/Divine84" target="_blank">GitHub</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div id="container">
+    <!-- Hero Section -->
+    <section id="hero" class="animate" style="animation-delay:0.2s;">
+      <h1>I’m Divine</h1>
+      <p>
+        17 y/o Cloud Security Engineer student with a professional focus on securing cloud environments,
+        automating infrastructure, and building reliable systems. I bring dedication to code quality,
+        infrastructure as code, and rigorous security practices.
+      </p>
+      <a href="#about" class="scroll-link">Learn More</a>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="animate delay-1">
+      <div class="section-title">Who I Am</div>
+      <p>
+        I'm a student in Cloud Security Engineering. I'm learning how to configure Linux servers, write basic automation scripts,
+        and secure cloud platforms like AWS and GCP. I've worked on setting up firewall rules,
+        creating IAM policies, and trying out beginner-level penetration testing to check security setups.
+      </p>
+      <p class="mt-20">
+        My goal is to excel in cloud security best practices, contribute to open-source security tools,
+        and prepare for professional certifications that demonstrate my expertise.
+      </p>
+    </section>
+
+    <!-- What I Do Section -->
+    <section id="do" class="animate delay-2">
+      <div class="section-title">What I Do</div>
+      <p>
+        • Learning to configure and secure Linux servers using tools like UFW, SSH keys, and Fail2Ban.<br>
+        • Practicing automation of basic security tasks using Python and shell scripting.<br>
+        • Exploring infrastructure-as-code by building simple AWS/GCP setups like VPCs, subnets, and IAM roles.<br>
+        • Writing basic documentation and setup guides for secure deployments.<br>
+        • Working with mentors or online communities to spot vulnerabilities and learn how to fix them.<br>
+      </p>
+    </section>
+
+    <!-- Learning Section -->
+    <section id="learning" class="animate delay-3">
+      <div class="section-title">What I’m Learning</div>
+      <p>
+        • Advanced C++: focusing on secure coding and memory safety.<br>
+        • Developing Python-based security tools: Scapy, Requests, Paramiko.<br>
+        • Deep-dive into Linux administration: kernel modules, systemd services.<br>
+        • Cloud architecture: IAM controls, network segmentation, logging/monitoring.<br>
+        • Ethical hacking methodologies: reconnaissance, exploitation, reporting.<br>
+        • Packet analysis techniques using Wireshark and tcpdump.
+      </p>
+    </section>
+
+    <!-- Goals Section -->
+    <section id="goals" class="animate delay-4">
+      <div class="section-title">What I Want to Be</div>
+      <p>
+        My aim is to become a certified Cloud Security Engineer—designing and auditing secure,
+        scalable infrastructures. I plan to achieve AWS Security Specialty and Linux Foundation
+        certifications under a constrained budget, and to contribute meaningfully to cloud security
+        projects in the open-source community.
+      </p>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="animate delay-5">
+      <div class="section-title">Skills</div>
+      <ul>
+        <li>C++ (Secure Coding)</li>
+        <li>Python (Automation &amp; Security Tools)</li>
+        <li>Linux Administration (Kali, Arch, Ubuntu)</li>
+        <li>Cloud Security Fundamentals</li>
+        <li>Network Scanning &amp; Penetration</li>
+      </ul>
+    </section>
+
+    <!-- Certificates Section -->
+    <section id="certificates" class="animate" style="animation-delay:2.6s;">
+      <div class="section-title">Certificates</div>
+      <div class="cert-item">
+        <h3>Coursera Cloud Security Fundamentals</h3>
+        <p>March 2025</p>
+      </div>
+      <div class="cert-item">
+        <h3>Python for Beginners (Codecademy)</h3>
+        <p>January 2025</p>
+      </div>
+      <div class="cert-item">
+        <h3>Linux Essentials (Linux Foundation)</h3>
+        <p>December 2024</p>
+      </div>
+    </section>
+
+    <!-- Actions Section -->
+    <section id="actions" class="animate" style="animation-delay:2.8s;">
+      <button onclick="window.location.href='#contact'">Contact Me</button>
+      <button onclick="window.open('https://github.com/Divine84','_blank')">GitHub</button>
+      <button onclick="window.open('https://linkedin.com/','_blank')">LinkedIn</button>
+    </section>
+
+    <!-- Blog Feed Section (Single Post) -->
+    <section id="blog" class="animate" style="animation-delay:3.0s;">
+      <div class="blog-title">Blog</div>
+      <div class="post-list">
+        <!-- Only one post for now -->
+        <div class="post-item" style="animation-delay: 0.2s;">
+          <h3>Welcome to Divine’s Cyber Chronicle</h3>
+          <div class="post-meta">Posted on Dec 27, 2024</div>
+          <p>
+            Divine’s Cyber Chronicle is my raw log — balancing underground hacking with cloud security grind. Expect real setups, scars, and skills, not sugarcoated stories. I'm learning fast, building harder. Stay tuned.  
+          </p>
+          <a href="post1.html" class="read-more">Continue reading →</a> <br>
+          --------------------------------------------------------------------------
+        </div>
+      </div>
+    </section>
+    
+
+    <!-- Contact Section -->
+    <section id="contact" class="animate" style="animation-delay:3.2s;">
+      <div class="section-title">Get in Touch</div>
+      <p>If you want to collaborate, learn, or discuss cloud security projects, find me on Discord:</p>
+      <a class="discord-link" href="https://discord.gg/6MmMwrJe64" target="_blank">
+        <svg class="discord-icon" viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg">
+          <path d="M60.104 4.552A58.322 58.322 0 0046.86.077a41.672 41.672 0 00-1.995 4.134 55.452 55.452 0 00-16.774 0A41.531 41.531 0 0026.097.077a58.428 58.428 0 00-13.256 4.48C5.217 19.076 4.774 33.32 6.228 47.378a58.234 58.234 0 0017.591 8.96 43.07 43.07 0 003.041-4.964 37.217 37.217 0 01-5.885-2.782c.493-.354.977-.72 1.453-1.095a33.321 33.321 0 0029.971 0c.47.384.954.75 1.447 1.095a37.192 37.192 0 01-5.9 2.782 43.245 43.245 0 003.038 4.964 58.286 58.286 0 0017.593-8.96c1.445-14.06 1.021-28.302-4.155-42.826zM23.728 37.342c-3.186 0-5.8-2.896-5.8-6.462 0-3.565 2.576-6.462 5.8-6.462 3.242 0 5.84 2.897 5.8 6.462 0 3.566-2.558 6.462-5.8 6.462zm23.542 0c-3.186 0-5.8-2.896-5.8-6.462 0-3.565 2.576-6.462 5.8-6.462 3.242 0 5.84 2.897 5.8 6.462 0 3.566-2.558 6.462-5.8 6.462z"/>
+        </svg>
+        Join on Discord
+      </a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="animate" style="animation-delay:3.4s;">
+      <p>© 2025 Divine — Building Security, One Layer at a Time.</p>
+      <p>Designed &amp; Developed by <span style="color: var(--primary);">Divine</span></p>
+    </footer>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const options = { root: null, rootMargin: '0px', threshold: 0.2 };
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, options);
+      document.querySelectorAll('.animate').forEach(el => observer.observe(el));
+    });
+  </script>
+</body>
+</html>
