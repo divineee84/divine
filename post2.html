@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stealth Recon Scanner 9000 | Divine84</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --text: #e0e0e0;
+      --accent: #00bfff;
+      --highlight: #00bfff;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+    header {
+      background-color: #111;
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--accent);
+      animation: slideDown 1s ease;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 {
+      font-size: 2rem;
+      color: var(--accent);
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: bold;
+      position: relative;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background-color: var(--highlight);
+      bottom: -4px;
+      left: 0;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease-in-out;
+    }
+    nav a:hover::after {
+      transform: scaleX(1);
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      animation: fadeIn 1.2s ease;
+    }
+    .post {
+      background: #1c1c1c;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(114, 137, 218, 0.3);
+      transition: transform 0.3s;
+      margin-bottom: 2rem;
+    }
+    .post:hover {
+      transform: scale(1.01);
+    }
+    .post h2 {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .date {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 1.2rem;
+    }
+    .post p {
+      margin-bottom: 1.2rem;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background-color: #111;
+      margin-top: 3rem;
+      font-size: 0.9rem;
+      border-top: 1px solid #222;
+    }
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
+      z-index: 999;
+      max-width: 90%;
+      width: 600px;
+      height: auto;
+    }
+    .popup img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .popup-close {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #fff;
+    }
+    @keyframes slideDown {
+      0% { transform: translateY(-100%); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.98); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+  </style>
+  <script>
+    function togglePopup() {
+      const popup = document.getElementById("preview-popup");
+      popup.style.display = popup.style.display === "block" ? "none" : "block";
+    }
+    function openTerminalPage() {
+      window.open('post2terminal.html', '_blank');
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <h1><i class="fas fa-terminal"></i> Divine84</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="https://github.com/divineee84" target="_blank">GitHub</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <article class="post">
+      <h2>⚡ Stealth Recon Scanner 9000</h2>
+      <p class="date">Posted on June 9, 2025</p>
+      <button onclick="togglePopup()" style="padding: 8px 12px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Preview Screenshot</button>
+      <button onclick="openTerminalPage()" style="margin-left: 10px; padding: 8px 12px; background: #333; color: var(--accent); border: 1px solid var(--accent); border-radius: 6px; font-weight: bold; cursor: pointer;">Launch Terminal UI</button>
+      <div class="popup" id="preview-popup" style="display: none;">
+        <span class="popup-close" onclick="togglePopup()">&times;</span>
+        <img src="voobs.png" alt="Project Preview">
+      </div>
+      <p>
+        🕶️ <strong>What is this?</strong><br>
+        A fast, minimal, and stealthy Python port scanner — perfect for beginner ethical hackers, grey hats, and cybersecurity tinkerers. It scans ports, grabs banners, and dumps webpage source code if available.
+      </p>
+      <p>
+        💻 <strong>Why did I make this?</strong><br>
+        I wanted a tool that gives raw info fast — without bloated features. Just pure recon with a dark vibe. No noise. No fluff.
+      </p>
+      <p>
+        🧠 <strong>How it works:</strong><br>
+        It connects to target ports using socket stealth methods. If a port is open, it tries to grab service banners and optionally curl the page if HTTP is detected — saving HTML locally for offline inspection.
+      </p>
+      <p>
+        🛠️ <strong>Tech Stack:</strong><br>
+        Python, threading, sockets, terminal styling, and bash-powered `curl` for deep web grabs.
+      </p>
+      <p>
+        🔗 <strong><a href="https://github.com/divineee84/PythonProjectSecBased" target="_blank" style="color: var(--accent);">View Project on GitHub →</a></strong>
+      </p>
+      <p>
+        Built with obsession, frustration, and every failed scan that came before. Real hacker energy. More updates coming soon.
+      </p>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Divine. Built with brain, bash, and bad decisions.</p>
+  </footer>
+</body>
+</html>
