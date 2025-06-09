@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stealth Scanner Terminal</title>
+  <style>
+    body {
+      background-color: #0f0f1e;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', Courier, monospace;
+      color: #00ffff;
+    }
+    .terminal-box {
+      background-color: #011627;
+      width: 600px;
+      height: 400px;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .terminal-header {
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: #00ffff;
+    }
+    #terminal-output {
+      flex: 1;
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+    }
+    .input-line {
+      display: flex;
+      margin-top: 1rem;
+    }
+    .input-line input {
+      background: none;
+      border: none;
+      border-bottom: 2px solid #00ffff;
+      color: #00ffff;
+      flex: 1;
+      padding: 4px;
+      font-size: 1rem;
+    }
+    .input-line input:focus {
+      outline: none;
+    }
+    button {
+      background-color: #00ffff;
+      border: none;
+      color: #011627;
+      padding: 6px 12px;
+      margin-left: 10px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .clear-btn {
+      margin-top: 10px;
+      align-self: flex-end;
+      background-color: transparent;
+      border: 1px solid #00ffff;
+      color: #00ffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="terminal-box">
+    <div class="terminal-header">Stealth Scanner Terminal</div>
+    <div id="terminal-output"></div>
+    <div class="input-line">
+      <input type="text" id="ipInput" placeholder="Enter IP or domain..." />
+      <button onclick="runFakeScan()">Scan</button>
+    </div>
+    <button class="clear-btn" onclick="clearTerminal()">Clear</button>
+  </div>
+
+  <script>
+    const output = document.getElementById("terminal-output");
+
+    const ports = [21,22,23,25,53,80,110,111,135,139,143,443,445,993,995,1723,3306,3389,5900,8080,8443];
+
+    const banners = {
+      80: "Apache/2.4.41 (Ubuntu)",
+      443: "nginx/1.18.0 (Ubuntu)",
+      22: "OpenSSH 8.2p1 Ubuntu-4ubuntu0.3",
+      3306: "MySQL 5.7.34",
+      21: "vsFTPd 3.0.3"
+    };
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function typeLine(text, delay = 30) {
+      for (let char of text) {
+        output.textContent += char;
+        await sleep(delay);
+      }
+      output.textContent += "\n";
+    }
+
+    async function bootAnimation() {
+      output.textContent = "";
+      await typeLine("Booting Divine84 system...");
+      await typeLine("Loading kernel modules...");
+      await typeLine("Initializing stealth modules...");
+      await typeLine("Establishing socket shell...");
+      await typeLine("System ready. Input target.");
+    }
+
+    async function runFakeScan() {
+      const ip = document.getElementById("ipInput").value.trim();
+      if (!ip) return;
+      output.textContent += `\n[+] Target input: ${ip}\n`;
+      await typeLine(`[+] Resolving IP...`);
+      await sleep(500);
+      await typeLine(`[+] IP resolved: ${fakeResolve(ip)}`);
+      await typeLine(`[+] Starting port scan...`);
+      for (let port of ports) {
+        await sleep(100);
+        let isOpen = Math.random() > 0.4; // simulate open ports
+        if (isOpen) {
+          await typeLine(`[+] Port ${port} open | Banner: ${banners[port] || 'No banner'}`);
+          if ([80, 8080, 443, 8443].includes(port)) {
+            await typeLine(`    [*] Dumping web content | HTTP Status: 200 OK`);
+          }
+        } else {
+          await typeLine(`[-] Port ${port} closed`);
+        }
+      }
+      await typeLine(`[✓] Scan complete. Awaiting new target or clear.`);
+    }
+
+    function fakeResolve(ip) {
+      return ip.split('').map(c => (c === '.' ? '.' : Math.floor(Math.random() * 9))).join('');
+    }
+
+    function clearTerminal() {
+      bootAnimation();
+      document.getElementById("ipInput").value = "";
+    }
+
+    window.onload = bootAnimation;
+  </script>
+</body>
+</html>
