@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GITHISHIPER Terminal Recon</title>
+<style>
+  /* Basic dark terminal vibe */
+  body {
+    margin: 0; padding: 0;
+    background: #0d0d0d;
+    color: #00ff99;
+    font-family: 'Courier New', Courier, monospace;
+    overflow-x: hidden;
+  }
+  .console {
+    max-width: 900px;
+    margin: 1rem auto;
+    padding: 1rem 2rem;
+    background: #111;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00ff99aa;
+  }
+  h1.banner {
+    font-family: monospace;
+    white-space: pre;
+    font-weight: 900;
+    font-size: 1.2rem;
+    text-align: center;
+    background: linear-gradient(90deg, #00ff99, #00cc66, #00ff99);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: colorcycle 3s linear infinite;
+    user-select: none;
+  }
+  @keyframes colorcycle {
+    0% {background-position: 0%;}
+    100% {background-position: 100%;}
+  }
+  .typing {
+    display: inline-block;
+    border-right: 2px solid #00ff99;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .field-label {
+    color: #00cc66;
+    font-weight: bold;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.7rem 0;
+  }
+  table th, table td {
+    border: 1px solid #00ff99aa;
+    padding: 0.5rem;
+    text-align: left;
+    font-size: 0.9rem;
+  }
+  table th {
+    background: #003300cc;
+  }
+  button {
+    background: #00cc66;
+    color: #000;
+    font-weight: bold;
+    padding: 0.3rem 0.7rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0.3rem 0.1rem;
+  }
+  button:hover {
+    background: #00ff99;
+    color: #111;
+  }
+  .loader {
+    border: 4px solid #111;
+    border-top: 4px solid #00ff99;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+  }
+  .panel {
+    background: #002200cc;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    color: #00ff99;
+    font-weight: bold;
+    text-align: center;
+  }
+  input[type=text], input[type=number] {
+    padding: 0.3rem 0.5rem;
+    font-family: monospace;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #00ff99aa;
+    background: #111;
+    color: #00ff99;
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<div class="console" id="console">
+  <h1 class="banner" id="banner"></h1>
+  <div id="typing-text" style="margin-bottom: 1rem;"></div>
+
+  <label class="field-label" for="username">Enter GitHub username:</label>
+  <input type="text" id="username" placeholder="e.g. torvalds" autocomplete="off" />
+  <button id="fetch-btn">Fetch User</button>
+
+  <div id="output"></div>
+</div>
+
+<script>
+  // Banner animation text (like your python banner)
+  const BANNER = `  ____ _ _   _     _     _     _                 
+ / ___(_) |_| |__ (_)___| |__ (_)_ __   ___ _ __ 
+| |  _| | __| '_ \\| / __| '_ \\| | '_ \\ / _ \\ '__|
+| |_| | | |_| | | | \\__ \\ | | | | |_) |  __/ |   
+ \\____|_|\\__|_| |_|_|___/_| |_|_| .__/ \\___|_|   
+                                |_|              `;
+
+  const bannerEl = document.getElementById('banner');
+  let bannerColorIdx = 0;
+  const bannerColors = ["#00ff99", "#00cc66", "#00ffcc", "#00ccff", "#cc66ff", "#ff66cc"];
+  
+  function cycleBannerColors() {
+    bannerEl.style.background = `linear-gradient(90deg, ${bannerColors[bannerColorIdx]}, ${bannerColors[(bannerColorIdx+1)%bannerColors.length]})`;
+    bannerEl.style.webkitBackgroundClip = 'text';
+    bannerEl.style.color = 'transparent';
+    bannerColorIdx = (bannerColorIdx + 1) % bannerColors.length;
+  }
+  bannerEl.textContent = BANNER;
+  setInterval(cycleBannerColors, 500);
+
+  // Typing effect function
+  async function slowTyping(text, speed=30) {
+    const typingEl = document.getElementById('typing-text');
+    typingEl.textContent = '';
+    for (let i=0; i<text.length; i++) {
+      typingEl.textContent += text.charAt(i);
+      await new Promise(r => setTimeout(r, speed));
+    }
+  }
+
+  // Spinner loader
+  function createLoader() {
+    const loader = document.createElement('span');
+    loader.className = 'loader';
+    return loader;
+  }
+
+  // Fetch GitHub user
+  async function fetchGitHubUser(username) {
+    const res = await fetch(`https://api.github.com/users/${username}`);
+    if (!res.ok) throw new Error(`User not found`);
+    const data = await res.json();
+    return data;
+  }
+
+  // Fetch repos of user
+  async function fetchRepos(reposUrl) {
+    const res = await fetch(reposUrl);
+    if (!res.ok) throw new Error(`Repos not found`);
+    const data = await res.json();
+    return data;
+  }
+
+  // Fetch blog title from URL - minimal fallback with CORS issues ignored
+  async function fetchBlogTitle(url) {
+    if (!url) return "N/A";
+    try {
+      const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+      if (!res.ok) return "N/A";
+      const data = await res.json();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(data.contents, "text/html");
+      return doc.title || "N/A";
+    } catch {
+      return "N/A";
+    }
+  }
+
+  // Display user info in table
+  async function displayUserInfo(user) {
+    const blogTitle = await fetchBlogTitle(user.blog);
+    const table = `
+      <table>
+        <tr><th>Field</th><th>Value</th></tr>
+        <tr><td>Name</td><td>${user.name || 'N/A'}</td></tr>
+        <tr><td>Bio</td><td>${user.bio || 'N/A'}</td></tr>
+        <tr><td>Public Repos</td><td>${user.public_repos}</td></tr>
+        <tr><td>Followers</td><td>${user.followers}</td></tr>
+        <tr><td>Following</td><td>${user.following}</td></tr>
+        <tr><td>Location</td><td>${user.location || 'N/A'}</td></tr>
+        <tr><td>Blog URL</td><td>${user.blog || 'N/A'}</td></tr>
+        <tr><td>Blog Title</td><td>${blogTitle}</td></tr>
+      </table>
+    `;
+    return table;
+  }
+
+  // Display repos in table - NO DOWNLOAD BUTTON, ONLY COPY CLONE URL
+  function displayRepos(repos) {
+    if (repos.length === 0) return `<p style="color:#ffcc00;">No public repositories found.</p>`;
+    let rows = repos.map((r, i) => {
+      const lastUpdate = r.updated_at ? r.updated_at.replace('T', ' ').replace('Z', '') : 'N/A';
+      return `
+        <tr>
+          <td>${i+1}</td>
+          <td>${r.name}</td>
+          <td>${r.stargazers_count}</td>
+          <td>${r.forks_count}</td>
+          <td>${r.language || 'N/A'}</td>
+          <td>${lastUpdate}</td>
+          <td>
+            <button onclick="copyCloneUrl('${r.clone_url}')">Copy Clone URL</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+    return `
+      <table>
+        <tr>
+          <th>#</th><th>Name</th><th>Stars</th><th>Forks</th><th>Language</th><th>Last Updated</th><th>Actions</th>
+        </tr>
+        ${rows}
+      </table>
+    `;
+  }
+
+  // Copy clone url to clipboard with badass alert
+  function copyCloneUrl(url) {
+    navigator.clipboard.writeText(url)
+      .then(() => alert('Clone URL copied! Download my python program to use link https://github.com/divineee84/githisiper/'))
+      .catch(() => alert('Clipboard copy failed. Just manually copy the URL, champ.'));
+  }
+
+  // Main logic
+  document.getElementById('fetch-btn').addEventListener('click', async () => {
+    const username = document.getElementById('username').value.trim();
+    if (!username) {
+      alert('Please enter a GitHub username!');
+      return;
+    }
+    const output = document.getElementById('output');
+    output.innerHTML = '';
+    await slowTyping("Fetching GitHub data... Hold tight, nerd.", 30);
+
+    // Show loader
+    const loader = createLoader();
+    output.appendChild(loader);
+
+    try {
+      const user = await fetchGitHubUser(username);
+      loader.remove();
+
+      const userTable = await displayUserInfo(user);
+      output.innerHTML = userTable;
+
+      // Add repos header
+      const reposHeader = document.createElement('h2');
+      reposHeader.textContent = "Repositories";
+      reposHeader.style.color = "#00ff99";
+      output.appendChild(reposHeader);
+
+      // Show loader for repos
+      const reposLoader = createLoader();
+      output.appendChild(reposLoader);
+
+      const repos = await fetchRepos(user.repos_url);
+      reposLoader.remove();
+
+      const reposTable = displayRepos(repos);
+      output.insertAdjacentHTML('beforeend', reposTable);
+
+      // Panel end message
+      output.insertAdjacentHTML('beforeend', `<div class="panel">Recon Complete. Stay stealthy.</div>`);
+
+    } catch (e) {
+      loader.remove();
+      output.innerHTML = `<p style="color:#ff4444;">Error: ${e.message}</p>`;
+    }
+  });
+
+  // Run intro typing on load
+  window.onload = () => {
+    slowTyping("Welcome to GITHISHIPER - The Ultimate GitHub Recon CLI\n", 40);
+  }
+</script>
+
+</body>
+</html>
